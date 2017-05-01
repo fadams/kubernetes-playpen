@@ -92,7 +92,7 @@ I've *no idea* why I'm seeing that error - need to try and dig into the hyperkub
 
 
 
-**UPDATE** I've just come across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) which actually seems to work!! It has launched what looks like a working Kubernetes and I'm not seeing the kubectl connection refused problem and also a working Kubernetes Dashboard. Kid is basically a single bash script so it should be possible to figure out what that is doing that the other instructions are not.
+**UPDATE** I've just come across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) which actually seems to work!! It has launched what looks like a working Kubernetes and I'm not seeing the kubectl connection refused problem and also a working Kubernetes Dashboard. Kid is basically a single bash script so it should be possible to figure out what that is doing that the other instructions are not. One thing I've noticed though is that kid is set up for Kubernetes version 1.3.7 and it doesn't seem to work with version 1.6.2.
 
 
 

@@ -12,9 +12,6 @@ In the Kubernetes [Picking the Right Solution](https://kubernetes.io/docs/setup/
 
 In the mean time in order to run Kubernetes locally via Docker there are instructions here https://zwischenzugs.wordpress.com/2015/04/06/play-with-kubernetes-quickly-using-docker/ and here http://janetkuo.github.io/kubernetes/v1.0/docs/getting-started-guides/docker.html which both present a similar approach **note** however that they are a somewhat out of date and using [minikube](https://github.com/kubernetes/minikube) is likely to be a much more supported approach.
 
-I also came across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) though I've not tried that yet.
-
-
 
 ### Getting started
 
@@ -92,6 +89,10 @@ The connection to the server localhost:8080 was refused - did you specify the ri
 ```
 
 I've *no idea* why I'm seeing that error - need to try and dig into the hyperkube documents - it's not obvious that any API server is actually running for example :-(
+
+
+
+**UPDATE** I've just come across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) which actually seems to work!! It has launched what looks like a working Kubernetes and I'm not seeing the kubectl connection refused problem and also a working Kubernetes Dashboard. Kid is basically a single bash script so it should be possible to figure out what that is doing that the other instructions are not.
 
 
 

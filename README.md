@@ -10,7 +10,7 @@ The currently recommended way of installing on a single node is to use [minikube
 In the Kubernetes [Picking the Right Solution](https://kubernetes.io/docs/setup/pick-right-solution/) there *was* a link to a **Portable Multi-Node Cluster** that ran Kubernetes in Docker, but I never managed to get that to work properly and moreover it seems to have disappeared from the *Picking the Right Solution* documentation. Doing a search for "docker-multinode" yields this page: https://kubernetes.io/docs/getting-started-guides/docker-multinode/, which indicates that the docker-multinode guide has been superseded by [kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/) though nothing in the kubeadm guide implied running on containers, rather it looks like a bare metal install. The original docker-multinode guide seems to be mirrored here https://kubernetes-io-vnext-staging.netlify.com/docs/getting-started-guides/docker-multinode/
 
 
-In the mean time in order to run Kubernetes locally via Docker there are instructions here https://zwischenzugs.wordpress.com/2015/04/06/play-with-kubernetes-quickly-using-docker/ and here http://janetkuo.github.io/kubernetes/v1.0/docs/getting-started-guides/docker.html which both present a similar approach though do **note** that they are a little out of date and using [minikube](https://github.com/kubernetes/minikube) is likely to be a better supported approach.
+In the mean time in order to run Kubernetes locally via Docker there are instructions here https://zwischenzugs.wordpress.com/2015/04/06/play-with-kubernetes-quickly-using-docker/ and here http://janetkuo.github.io/kubernetes/v1.0/docs/getting-started-guides/docker.html which both present a similar approach **note** however that they are a somewhat out of date and using [minikube](https://github.com/kubernetes/minikube) is likely to be a much more supported approach.
 
 I also came across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) though I've not tried that yet.
 
@@ -18,9 +18,9 @@ I also came across [kid - Kubernetes in Docker](https://github.com/vyshane/kid) 
 
 ### Getting started
 
-The instructions in the guides cited above are similar to each other but they differ on things like the versions of etcd, hyperkube and kubectl used.
+The instructions in the guides cited above are similar to each other, but they differ on things like the versions of etcd, hyperkube and kubectl used.
 
-For example:
+For example the original guide uses the following instructions:
 ```
 docker run --net=host -d gcr.io/google_containers/etcd:2.0.9 /usr/local/bin/etcd --addr=127.0.0.1:4001 --bind-addr=0.0.0.0:4001 --data-dir=/var/etcd/data
 ```
@@ -69,18 +69,29 @@ docker run --net=host -d gcr.io/google_containers/etcd:3.0.17 /usr/local/bin/etc
 ```
 
 ### Step Two: Run the master
-In the instructions in the previously cited guides running the master uses the following instructions:
 ```
-docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  gcr.io/google_containers/hyperkube:v0.21.2 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=127.0.0.1 --config=/etc/kubernetes/manifests
-```
-
-That actually seems to work, resulting in a running hyperkube container and pause containers, however simply replacing the version with a more recent version (e.g. v1.6.2) e.g.
-
-```
-docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  gcr.io/google_containers/hyperkube:v1.6.2 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=127.0.0.1 --config=/etc/kubernetes/manifests
+docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  gcr.io/google_containers/hyperkube:v1.6.2 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=127.0.0.1 --pod-manifest-path=/etc/kubernetes/manifests
 ```
 
-results in a stopped container indicating that something is broken in the configuration.
+### Step Three: Run the service proxy
+```
+docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.6.2 /hyperkube proxy --master=http://127.0.0.1:8080 --v=2
+```
+
+### Step Four: Install kubectl
+```
+curl -LO https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+```
+
+**unfortunately**
+```
+./kubectl version
+Client Version: version.Info{Major:"1", Minor:"6", GitVersion:"v1.6.2", GitCommit:"477efc3cbe6a7effca06bd1452fa356e2201e1ee", GitTreeState:"clean", BuildDate:"2017-04-19T20:33:11Z", GoVersion:"go1.7.5", Compiler:"gc", Platform:"linux/amd64"}
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+```
+
+I've *no idea* why I'm seeing that error - need to try and dig into the hyperkube documents - it's not obvious that any API server is actually running for example :-(
 
 
 
@@ -96,6 +107,5 @@ Play with Kubernetes quickly using Docker: https://zwischenzugs.wordpress.com/20
 Running Kubernetes locally via Docker: http://janetkuo.github.io/kubernetes/v1.0/docs/getting-started-guides/docker.html
 
 Launch Kubernetes Cluster Tutorial: https://www.katacoda.com/courses/kubernetes/launch-cluster
-
 
 
